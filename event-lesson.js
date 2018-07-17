@@ -3,9 +3,9 @@
  */
 'use strict';
 
-const eventEmitter = require('events').EventEmitter;
+const EventEmitter = require('events').EventEmitter;
 
-//class MyEvent extends eventEmitter {}
+//class MyEvent extends EventEmitter {}
 
 //let myEvent = new MyEvent();
 
@@ -61,7 +61,7 @@ const eventEmitter = require('events').EventEmitter;
 
 //const util = require('util');
 //
-//class Pulse extends eventEmitter {
+//class Pulse extends EventEmitter {
 //  constructor() {
 //    super()
 //  }
@@ -85,7 +85,7 @@ const eventEmitter = require('events').EventEmitter;
 //pulse.start();
 
 
-let myEvent = new eventEmitter();
+let myEvent = new EventEmitter();
 
 function listener1() {
   console.log('this is listener one');
@@ -121,4 +121,7 @@ for (let i = 0; i < 12; i++) {
   });
 }
 console.log(myEvent.listeners('event')); // 返回事件上注册的监听器列表
+
+
+
 
