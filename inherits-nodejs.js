@@ -3,6 +3,107 @@
  */
 "use strict";
 
+//借用构造函数,借助call或apply,使用Superclass构造函数,缺少函数复用
+
+function Superclass(name = 'default') {
+  this.name = name;
+}
+
+function Subclass(age = 22, name) {
+  this.age = age;
+  Superclass.call(this, name);
+  this.say = function () {
+    console.log(`this.name=${this.name}...this.age=${this.age}`);
+  };
+}
+
+const test = new Subclass(23);
+test.say();
+console.log(`test instanceof Subclass`, test instanceof Subclass);
+console.log(`test instanceof Superclass`, test instanceof Superclass);
+console.log(test.__proto__.constructor);
+console.log(Subclass.prototype.constructor);
+
+
+// 原型链继承,使用prototype指向Superclass对象,子类无法给父类传递参数,无法使用字面量添加新方法,所有子类对象共享父类所有方法和属性(引用类型)
+function Superclass(name = 'default') {
+  this.name   = name;
+  this.colors = ['r', 'y'];
+}
+
+function Subclass(age = 22) {
+  this.age = age;
+  this.say = function () {
+    console.log(`this.name=${this.name}...this.age=${this.age}`);
+  };
+}
+
+Subclass.prototype             = new Superclass();
+Subclass.prototype.constructor = Subclass;
+
+const test  = new Subclass(23);
+const test1 = new Subclass(24);
+test.colors.push('b');
+console.log(test.colors);
+console.log(test1.colors);
+test.say();
+test1.say();
+console.log(`test instanceof Subclass`, test instanceof Subclass);
+console.log(`test instanceof Superclass`, test instanceof Superclass);
+console.log(test.__proto__.constructor);
+console.log(Subclass.prototype.constructor);
+
+
+//组合继承,prototype+call/apply,借用构造函数对实例属性继承,prototype对共享方法继承,会调用两次父类构造函数
+function Superclass(name = 'default') {
+  this.name = name;
+}
+
+Superclass.prototype.say = function () {
+  console.log(this.name);
+};
+
+function Subclass(age = 22, name) {
+  this.age = age;
+  Superclass.call(name);
+}
+
+Subclass.prototype             = new Superclass();
+Subclass.prototype.constructor = Subclass;
+
+const test = new Subclass(23);
+test.say();
+console.log(`test instanceof Subclass`, test instanceof Subclass);
+console.log(`test instanceof Superclass`, test instanceof Superclass);
+console.log(test.__proto__.constructor);
+console.log(Subclass.prototype.constructor);
+
+
+// ES6 Class继承
+class Superclass {
+  constructor(name = 'default') {
+    this.name = name;
+  }
+}
+class Subclass extends Superclass {
+  constructor(age = 22, name) {
+    super(name);
+    this.age = age;
+  }
+
+  say() {
+    console.log(`this.name=${this.name}...this.age=${this.age}`);
+  }
+}
+
+const test = new Subclass(23);
+test.say();
+console.log(`test instanceof Subclass`, test instanceof Subclass);
+console.log(`test instanceof Superclass`, test instanceof Superclass);
+console.log(test.__proto__.constructor);
+console.log(Subclass.prototype.constructor);
+
+
 // util.inherits 源码
 var inherits = function(ctor, superCtor) {
   //严格相等测试:undefined/null
@@ -44,8 +145,8 @@ function Child() {
   if (!(this instanceof Child)) {
     return new Child();
   }
-
-  Base.call(this); //在构造函数中调用 父类.call(this)，实现父类成员变量的继承
+  //在构造函数中调用 父类.call(this)，实现父类成员变量的继承
+  Base.call(this);
 
   this.className = 'Child';
 }
@@ -53,5 +154,4 @@ function Child() {
 inherits(Child, Base);
 
 let child  = new Child();
-
 console.log(child.className);
